@@ -8,12 +8,16 @@
 from selenium import webdriver
 import time
 import sys
+import ctypes
+user32 = ctypes.windll.user32
 
 # Opens a Chrome window not signed in to any Google profile
-# and loads the Chartboost website to log in
+# loads the Chartboost website to log in
+# and resizes window to fit screen resolution
 browser = webdriver.Chrome()
 url = "https://dashboard.chartboost.com/login"
 browser.get(url)
+browser.set_window_size(user32.GetSystemMetrics(0),user32.GetSystemMetrics(1))
 
 # We will need to log in to Chartboost
 time.sleep(10)
