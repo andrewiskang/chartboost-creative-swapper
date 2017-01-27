@@ -30,7 +30,7 @@ browser.find_element_by_class_name('login-layout__submit').click()
 
 # Navigate to our advertising campaigns
 time.sleep(3)
-browser.get('https://dashboard.chartboost.com/all/campaigns/' + '53dc096fc26ee47d9e5a8e8e')
+browser.get('https://dashboard.chartboost.com/all/campaigns/' + '542608a689b0bb11d1d3c9b0')
 
 time.sleep(10)
 print('**REMOVING CREATIVES**')
@@ -55,11 +55,11 @@ browser.find_element_by_id('network-advertiser__target-0__creatives__actions--se
 time.sleep(2)
 
 # For now, assume a list of creatives to turn in
-creative1 = '20160915-g3-trunsky-Android-English'
-creative2 = '20170125-ss-trunskyleaf-Android-English'
-creative3 = '20170125-g3-tigerflame-Android-English'
-creative4 = '20170125-cp-gameplay-Android-English'
-creative5 = '20170125-g3-gunlion-Android-English'
+creative1 = '20170127-cp-gameplay-iOS-English'
+creative2 = '20170127-g3-tigerflame-iOS-English'
+creative3 = '20170127-g3-gunlion-iOS-English'
+creative4 = '20170127-ss-trunskyleaf-iOS-English'
+creative5 = '20160915-g3-trunsky-iOS-English'
 creativeList = [creative1, creative2, creative3, creative4, creative5]
 
 for creative in creativeList:
