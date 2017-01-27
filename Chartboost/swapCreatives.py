@@ -4,12 +4,24 @@
 # It also sends a message every time an error occurs,
 # e.g. campaign is not found, page could not load, creative not found
 
+# Inputs: email, password, CSV list of campaigns and creatives to turn in
+
+
 # Using selenium to help navigate the Chartboost website
 from selenium import webdriver
 import time
 import sys
+import csv
 import ctypes
 user32 = ctypes.windll.user32
+
+# We'll use the given CSV to compile a dictionary
+# of campaign IDs and a list of creatives to turn
+f = open(sys.argv[3])
+csv_f = csv.reader(f)
+creativeList = {}
+for row in csv_f:
+	creativeList.setdefault(row[0],[]).append(row[1])
 
 # Opens a Chrome window not signed in to any Google profile
 # loads the Chartboost website to log in
@@ -32,51 +44,49 @@ passwordInput.send_keys(password)
 
 browser.find_element_by_class_name('login-layout__submit').click()
 
-# Navigate to our advertising campaigns
-time.sleep(3)
-browser.get('https://dashboard.chartboost.com/all/campaigns/' + '542608a689b0bb11d1d3c9b0')
 
-time.sleep(10)
-print('**REMOVING CREATIVES**')
-time.sleep(5)
-removeButtons = browser.find_elements_by_css_selector('i.ui.minus.creatives.icon')
-print(str(len(removeButtons)) + ' creatives to remove:')
-for button in removeButtons:
-	button.click()
-	print('creative removed')
+# For every campaign ID in the CSV:
+for campaignID in creativeList.keys():
+	# Navigate to our advertising campaigns
+	time.sleep(3)
+	browser.get('https://dashboard.chartboost.com/all/campaigns/' + campaignID)
+	print('Navigating to '+campaignID)
+	time.sleep(10)
+	print('**REMOVING CREATIVES**')
+	time.sleep(5)
+	removeButtons = browser.find_elements_by_css_selector('i.ui.minus.creatives.icon')
+	print(str(len(removeButtons)) + ' creatives to remove:')
+	for button in removeButtons:
+		button.click()
+		print('creative removed')
+		time.sleep(2)
+
+	# Add in creatives:
+	# - Press "Select Existing"
+	# - Search for a given creative name
+	# - Tick the box to the left
+	# - Press "Confirm"
+
+	print('**TURNING IN CREATIVES**')
 	time.sleep(2)
 
-# Add in creatives:
-# - Press "Select Existing"
-# - Search for a given creative name
-# - Tick the box to the left
-# - Press "Confirm"
-
-print('**TURNING IN CREATIVES**')
-time.sleep(2)
-
-browser.find_element_by_id('network-advertiser__target-0__creatives__actions--select-existing').click()
-time.sleep(2)
-
-# For now, assume a list of creatives to turn in
-creative1 = '20170127-cp-gameplay-iOS-English'
-creative2 = '20170127-g3-tigerflame-iOS-English'
-creative3 = '20170127-g3-gunlion-iOS-English'
-creative4 = '20170127-ss-trunskyleaf-iOS-English'
-creative5 = '20160915-g3-trunsky-iOS-English'
-creativeList = [creative1, creative2, creative3, creative4, creative5]
-
-for creative in creativeList:
-	elem = browser.find_element_by_xpath("//div[contains(text(), '" + creative + "')]/preceding-sibling::div[2]")
-	elem.click()
-	print('+ ' + creative)
+	browser.find_element_by_id('network-advertiser__target-0__creatives__actions--select-existing').click()
 	time.sleep(2)
 
+	# For now, assume a list of creatives to turn in
 
-browser.find_element_by_id('network-advertiser__target-0__creatives__actions--confirm').click()
-time.sleep(3)
+	for creative in creativeList[campaignID]:
+		elem = browser.find_element_by_xpath("//div[contains(text(), '" + creative + "')]/preceding-sibling::div[2]")
+		elem.click()
+		print('+ ' + creative)
+		time.sleep(2)
 
-# Save your progress - press the save button
-browser.find_element_by_id('network-advertiser__enabled-actions--save').click()
-time.sleep(10)
+
+	browser.find_element_by_id('network-advertiser__target-0__creatives__actions--confirm').click()
+	time.sleep(3)
+
+	# Save your progress - press the save button
+	# browser.find_element_by_id('network-advertiser__enabled-actions--save').click()
+	time.sleep(10)
+	print('Creative turn for '+campaignID+' completed\n')
 browser.quit()
